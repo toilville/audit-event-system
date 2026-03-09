@@ -24,6 +24,8 @@ import psycopg2
 from kafka import KafkaConsumer, KafkaProducer
 from kafka.errors import KafkaError
 
+from audit_events import forge_config
+
 # Configure logging
 logging.basicConfig(
     level=logging.INFO,
@@ -44,8 +46,8 @@ class AuditConsumerDaemon:
         """Initialize daemon with DB and Kafka connections"""
         self.running = True
 
-        # Kafka configuration
-        self.kafka_brokers = os.getenv('KAFKA_BROKERS', 'localhost:19092').split(',')
+        # Kafka configuration — broker from manifest; KAFKA_BROKERS env overrides
+        self.kafka_brokers = forge_config.kafka_broker().split(',')
         self.kafka_group = os.getenv('KAFKA_GROUP_ID', 'audit-consumer')
         self.kafka_topic = os.getenv('KAFKA_TOPICS', 'forge.audit.query.executed')
 
@@ -106,17 +108,8 @@ class AuditConsumerDaemon:
         Daemon will log to files only.
         """
         try:
-            database_url = os.getenv('DATABASE_URL')
-            if database_url:
-                conn = psycopg2.connect(database_url)
-            else:
-                conn = psycopg2.connect(
-                    host=os.getenv('POSTGRES_HOST', 'localhost'),
-                    port=int(os.getenv('POSTGRES_PORT', '5432')),
-                    database=os.getenv('POSTGRES_DB', 'forge'),
-                    user=os.getenv('POSTGRES_USER', 'peterswimm'),
-                    password=os.getenv('POSTGRES_PASSWORD', 'forge'),
-                )
+            # URL resolved from manifest; DATABASE_URL env overrides
+            conn = psycopg2.connect(forge_config.database_url())
             logger.info("✅ Connected to PostgreSQL")
             return conn
         except Exception as e:
