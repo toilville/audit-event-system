@@ -1,0 +1,6 @@
+extends: ~/.spel/forge-manifest.spel
+
+metadata:
+  version: 2.0
+  name: audit-events
+  role: Purview-compatible Kafka consumer logging audit events to the compliance schema
