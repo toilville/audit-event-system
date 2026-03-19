@@ -12,7 +12,7 @@ mkdir -p "$AUDIT_LOG_DIR" "$TRUST_LOG_DIR"
 
 # Kafka configuration
 KAFKA_TOPIC="${KAFKA_AUDIT_TOPIC:-forge.audit.query.executed}"
-KAFKA_BROKERS="${KAFKA_BROKERS:-localhost:19092}"
+KAFKA_BROKERS="${KAFKA_BROKERS:-10.10.0.1:19092}"
 
 # Audit event identifiers
 AUDIT_ID=$(uuidgen)
@@ -79,7 +79,7 @@ emit_to_kafka() {
     if docker ps --format '{{.Names}}' | grep -q forge-redpanda; then
         echo "$event" | docker exec -i forge-redpanda \
             kafka-console-producer \
-            --bootstrap-server localhost:9092 \
+            --bootstrap-server 10.10.0.1:19092 \
             --topic "$KAFKA_TOPIC" 2>/dev/null
         return $?
     fi

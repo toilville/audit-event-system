@@ -10,7 +10,7 @@ Usage:
     cat event.json | python emit_audit_event.py --topic forge.audit.custom
 
 Environment:
-    KAFKA_BROKERS - Comma-separated Kafka brokers (default: localhost:19092)
+    KAFKA_BROKERS - Comma-separated Kafka brokers (default: 10.10.0.1:19092)
 """
 
 import sys
@@ -67,8 +67,8 @@ def main():
     parser = argparse.ArgumentParser(description='Emit audit event to Kafka')
     parser.add_argument('--topic', default='forge.audit.query.executed',
                         help='Kafka topic (default: forge.audit.query.executed)')
-    parser.add_argument('--brokers', default=os.getenv('KAFKA_BROKERS', 'localhost:19092'),
-                        help='Kafka brokers (default: $KAFKA_BROKERS or localhost:19092)')
+    parser.add_argument('--brokers', default=os.getenv('KAFKA_BROKERS', '10.10.0.1:19092'),
+                        help='Kafka brokers (default: $KAFKA_BROKERS or 10.10.0.1:19092)')
     parser.add_argument('--debug', action='store_true',
                         help='Print event to stderr before sending')
 
